@@ -35,7 +35,7 @@
                 <div class="col-12 w-25">
                     <label class="visually-hidden" for="inlineFormSelectPref">Preference</label>
                     <select class="form-select" id="inlineFormSelectPref">
-                        <option selected>Choose...</option>
+                        <option id="choose" value="Choose">Choose...</option>
                         <option value="Java">Java</option>
                         <option value="Cpp">Cpp</option>
                         <option value="Python">Python</option>
@@ -60,6 +60,11 @@
             </div>
         </div>
     </div>
+    <div class="container mt-5">
+        <button id="show-code-btn" class="btn btn-primary mb-3">Show Submitted Code</button>
+        <div id="submitted-code" style="display: none;"></div>
+    </div>
+
     <script>
         const codeEditor = document.getElementById('code-editor');
         const editor = CodeMirror.fromTextArea(codeEditor, {
@@ -89,13 +94,16 @@
         })
 
         run.addEventListener('click', async () => {
+            if (option.value == "Choose") {
+                alert("Please select a language")
+            }
             let code = {
                 code: editor.getValue(),
                 input: input.value,
                 lang: option.value
             }
             console.log(code);
-            var oData = await fetch("http://localhost:3000/compile", {
+            var oData = await fetch("http://13.60.12.33:3000/compile", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -106,7 +114,31 @@
             output.value = d.output
         })
 
+        window.onload = async () => {
+            const showCodeBtn = document.getElementById("show-code-btn");
+            const submittedCodeDiv = document.getElementById("submitted-code");
 
+            // Event listener for button click
+            showCodeBtn.addEventListener("click", async () => {
+                // Fetch submitted code from the backend only when the button is clicked
+                const response = await fetch("http://13.60.12.33:3000/submitted-code");
+                const data = await response.json();
+
+                // Clear existing content
+                submittedCodeDiv.innerHTML = "";
+
+                // Display submitted code on the webpage
+                data.forEach((code) => {
+                    const codeBlock = document.createElement("pre");
+                    codeBlock.textContent = `Language: ${code.lang}\n\n${code.code}\n\nInput: ${code.input}\n\nOutput: ${code.output}`;
+                    codeBlock.className = "bg-light p-3 my-3";
+                    submittedCodeDiv.appendChild(codeBlock);
+                });
+
+                // Show the submitted code section
+                submittedCodeDiv.style.display = "block";
+            });
+        };
     </script>
 </body>
 

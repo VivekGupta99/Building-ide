@@ -5,7 +5,7 @@ const connectDB = async () => {
         const conn = await mongoose.connect(
             `mongodb+srv://Vivek1:vivekgupta@cluster0.xpfdemn.mongodb.net/`,
             {
-                useNewUrlParser: true, 
+                useNewUrlParser: true,
             }
         );
         console.log(`MongoDB Connected`);

@@ -45,6 +45,17 @@ app.post("/compile", async (req, res) => {
     }
 });
 
+app.get("/submitted-code", async (req, res) => {
+    try {
+        const submittedCode = await CodeRun.find().exec(); // Fetch only the code field from the database
+        res.json(submittedCode);
+        
+    } catch (error) {
+        console.error("Error fetching submitted code:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 async function serverStart() {
     try {
         await connectDB();
